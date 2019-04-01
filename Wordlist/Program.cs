@@ -10,7 +10,7 @@ namespace Wordlist
 {
     public class Program
     {
-        const int requestedLength = 10;
+        const int requestedLength = 6;
         static readonly Stopwatch stopwatch = new Stopwatch();
         public static void Main(string[] args)
         {
@@ -40,14 +40,12 @@ namespace Wordlist
             public char Char { get; }
             public int Length { get; set; }
             public IDictionary<char, WordGraph> Nodes;
-            public List<int> WordsThatEndHere;
 
             public WordGraph(int length, char character)
             {
                 Length = length;
                 Char = character;
                 Nodes = new Dictionary<char, WordGraph>();
-                WordsThatEndHere = new List<int>(32);
             }
 
             public WordGraph GetOrCreateNode(char character)
@@ -76,20 +74,17 @@ namespace Wordlist
                 _stringBuilder = new StringBuilder();
             }
 
-            public string Walk(char[] word)
+            public string Walk(string word)
             {
                 var firstWordEnd = _firstWordGraph;
                 var secondWordEnd = _secondWordGraph;
                 var firstWordLength = _firstWordGraph.Length;
                 var secondWordLength = _secondWordGraph.Length;
-                var firstWord = new char[firstWordLength];
-                var secondWord = new char[secondWordLength];
                 var characterIndex = 0;
                 while (characterIndex < word.Length
                        && characterIndex < firstWordLength
                        && firstWordEnd.Nodes.TryGetValue(word[characterIndex], out firstWordEnd))
                 {
-                    firstWord[characterIndex] = firstWordEnd.Char;
                     characterIndex++;
                 }
 
@@ -100,16 +95,15 @@ namespace Wordlist
                        && (characterIndex - firstWordLength) < secondWordLength
                        && secondWordEnd.Nodes.TryGetValue(word[characterIndex], out secondWordEnd))
                 {
-                    secondWord[characterIndex - firstWordLength] = secondWordEnd.Char;
                     characterIndex++;
                 }
 
                 if (characterIndex < requestedLength)
                     return null;
 
-                _stringBuilder.Append(firstWord);
+                _stringBuilder.Append(word.Substring(0, firstWordLength));
                 _stringBuilder.Append(" + ");
-                _stringBuilder.Append(secondWord);
+                _stringBuilder.Append(word.Substring(firstWordLength, secondWordLength));
                 _stringBuilder.Append(" => ");
                 _stringBuilder.Append(word);
                 var combination = _stringBuilder.ToString();
@@ -156,8 +150,6 @@ namespace Wordlist
                     var character = word[characterIndex];
                     wordGraph = wordGraph.GetOrCreateNode(character);
                 }
-
-                wordGraph.WordsThatEndHere.Add(wordIndex);                    
             }
             
             //stopwatch.Reset();
@@ -173,28 +165,14 @@ namespace Wordlist
                 paths.Add(path);
             }
             
-            var builder = new StringBuilder();
-            string PrintCombination(string left, string right, string together)
-            {
-                builder.Append(left);
-                builder.Append(" + ");
-                builder.Append(right);
-                builder.Append(" => ");
-                builder.Append(together);
-                var print = builder.ToString();
-                builder.Clear();
-                return print;
-            }
-
             var combinations = new List<string>(512);
             for (var w = 0; w < wordsWithRequestedLength.Count; w++)
             {
                 var word = wordsWithRequestedLength[w];
-                var wordAsCharArray = word.ToCharArray();
                 for (var p = 0; p < paths.Count; p++)
                 {
                     var path = paths[p];
-                    var wordCombination = path.Walk(wordAsCharArray);
+                    var wordCombination = path.Walk(word);
                     if (wordCombination != null)
                         combinations.Add(wordCombination);
                 }
