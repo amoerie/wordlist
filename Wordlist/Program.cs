@@ -24,7 +24,7 @@ namespace Wordlist
                 stopwatch.Stop();
                 Console.WriteLine("Combinations: " + combinations.Count);
                 Console.WriteLine("Time taken: " + stopwatch.ElapsedMilliseconds + "ms");
-                Console.WriteLine("Press enter to see combinations");
+                //Console.WriteLine("Press enter to see combinations");
                 //Console.ReadLine();
                 //foreach (var combination in combinations)
                 //{
