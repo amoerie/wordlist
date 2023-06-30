@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using Wordlist;
 
+var start = Stopwatch.GetTimestamp();
 var words = WordlistReader.ReadWords();
-var combinations = WordCombinationsFinder.FindCombinations(words, 6);
-foreach (var combination in combinations)
-{
-    Console.WriteLine(combination);
-}
+var results = WordCombinationsFinder.FindCombinations(words, 6);
+var elapsed = Stopwatch.GetElapsedTime(start);
+Console.WriteLine($"Done in {elapsed:c}, {results.Count} results");

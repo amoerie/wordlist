@@ -5,10 +5,11 @@ namespace Wordlist;
 
 public class WordCombinationsFinder
 {
-    public static IEnumerable<string> FindCombinations(IEnumerable<string> words, int requestedLength)
+    public static List<string> FindCombinations(string[] words, int requestedLength)
     {
         // Requested length = 8? We'll only keep of words of length 2-6 
         var wordGraphsPerLength = new WordGraph[requestedLength - 3];
+        var results = new List<string>(2000);
         for (int i = 0; i < wordGraphsPerLength.Length; i++)
         {
             var length = i + 2;
@@ -63,8 +64,10 @@ public class WordCombinationsFinder
                 var path = paths[p];
                 var wordCombination = path.Walk(word, requestedLength);
                 if (wordCombination != null)
-                    yield return wordCombination;
+                    results.Add(wordCombination);
             }
         }
+
+        return results;
     }
 }
