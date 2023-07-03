@@ -12,5 +12,4 @@ public static class WordlistReader
     {
         return File.ReadAllLines("./wordlist.txt");
     }
-
 }
